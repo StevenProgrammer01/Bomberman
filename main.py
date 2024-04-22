@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from juego import Nivel
+from juego import Nivel,Personalizacion
 
 def P_personalizacion():
     # Función para abrir la ventana de personalización
@@ -25,7 +25,8 @@ def P_mejores_puntajes():
     # Aquí puedes agregar los widgets y funcionalidades de la ventana de mejores puntajes
 
 def P_juego():
-    Nivel(root,1, 4, 10, 180)
+    Personalizacion(root)
+    #Nivel(root,1, 4, 10, 180)
 
 # Configuración de la ventana principal
 root = tk.Tk()
