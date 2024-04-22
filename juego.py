@@ -6,15 +6,24 @@ import threading
 import random
 import datetime
 import time
+import winsound
+import pygame
 
+
+def play_sound(name):
+    winsound.PlaySound(f".//Sounds//{name}.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 def Personalizacion(root):
     def boton_presionado(numero, nombre):
+        root.iconify()
+        winsound.PlaySound(None, winsound.SND_PURGE)
+        winsound.PlaySound(".//Sounds//item Get.wav",winsound.SND_FILENAME)
         root2.destroy()
         Nivel(root,numero,3,10,180,nombre, 1)
+        
 
     # Crear la ventana
     root2 = tk.Toplevel(root)
-    root2.title("Personalización0")
+    root2.title("Personalización")
     root2.config(bg="black")
     root2.resizable(False, False)  # Hacer que la ventana no sea redimensionable
     root2.attributes('-topmost', True)  # Hacer que la ventana esté siempre arriba
@@ -27,8 +36,8 @@ def Personalizacion(root):
     imagen = ImageTk.PhotoImage(imagen)
 
     #Colocar entrada de texto
-    label_nombre = tk.Label(root2, text="Ingresa el nombre del jugador:")
-    label_nombre.grid(row=1, column=1)
+    label_nombre = tk.Label(root2, text="Ingresa tu nombre y escoge tu skin",font=("Fixedsys", 20, "normal"))
+    label_nombre.grid(row=0, column=1)
     entrada_nombre = tk.Entry(root2,font=("Fixedsys", 20, "normal"))
     entrada_nombre.grid(row=2, column=1)
 
@@ -42,9 +51,9 @@ def Personalizacion(root):
     boton1.image = imagen3
 
     # Colocar los botones en la ventana
-    boton1.grid(row=0, column=0, padx=10, pady=10)
-    boton2.grid(row=0, column=1, padx=10, pady=10)
-    boton3.grid(row=0, column=2, padx=10, pady=10)
+    boton1.grid(row=1, column=0, padx=10, pady=10)
+    boton2.grid(row=1, column=1, padx=10, pady=10)
+    boton3.grid(row=1, column=2, padx=10, pady=10)
 
     
     # Ejecutar el bucle principal de la aplicación
@@ -54,19 +63,22 @@ def Personalizacion(root):
 
 
 def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
+    play_sound("Level Start")
     
      # Crear la ventana del juego
     ventana = tk.Toplevel(root)
-    ventana.title("Laberinto")
+    ventana.title(f"Bomberman Nivel {level}")
+    ventana.resizable(False, False)
     ventana.config(bg="Green")
+    ventana.attributes('-topmost', True)
     print(nombre)
     
     global vidas, llave_encontrada,bombas,puntuacion, enemy1, enemy2, tiempo, laberinto
     global fire, enemigo1, enemigo2,personaje
     global enemigoImagen1, enemigoImagen2,personaje_imagen,imagen_actual
     global posicionEnemigo1, posicionEnemigo2,posicion_puerta,posiciones_destructibles, posicion_llave, personaje_posicion,bomba_posicion
-    global lista_explosiones
-    global skin, finish, name
+    global lista_explosiones, nivel
+    global skin, finish, name, sound
     #Inicializar variables globales del juego
     laberinto = [
         ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
@@ -74,16 +86,16 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         ['X', ' ', ' ', 'Y', ' ', ' ', 'X', ' ', 'X', ' ', ' ', 'X', ' ', 'Y', 'Y', 'X', 'Y', 'Y', 'Y', 'X'],
         ['X', 'Y', ' ', 'Y', ' ', ' ', 'Y', ' ', 'Y', ' ', 'Y', ' ', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
         ['X', 'Y', ' ', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Y', ' ', 'Y', 'Y', 'X'],
-        ['X', 'Y', ' ', ' ', ' ', ' ', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
-        ['X', 'Y', 'Y', 'Y', 'Y', 'X', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'X', 'Y', 'Y', ' ', 'Y', 'X'],
-        ['X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', 'Y', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X'],
-        ['X', 'Y', 'X', 'Y', ' ', 'X', 'Y', 'Y', 'X', 'Y', 'Y', 'Y', 'Y', 'Y', 'X', 'Y', 'Y', ' ', 'Y', 'X'],
-        ['X', ' ', ' ', ' ', ' ', 'Y', ' ', ' ', 'X', ' ', 'Y', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X'],
-        ['X', 'Y', 'X', 'Y', ' ', 'X', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'X', 'Y', 'Y', ' ', 'Y', 'X'],
-        ['X', ' ', ' ', ' ', ' ', 'Y', ' ', ' ', 'X', ' ', 'Y', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X'],
-        ['X', 'Y', 'X', 'Y', ' ', 'Y', 'X', 'Y', 'X', 'X', 'Y', 'Y', 'Y', 'Y', 'X', 'X', 'Y', 'X', 'X', 'X'],
-        ['X', 'Y', ' ', ' ', 'Y', ' ', 'Y', ' ', ' ', 'Y', ' ', 'Y', ' ', 'Y', ' ', ' ', ' ', ' ', ' ', 'X'],
-        ['X', ' ', 'P', ' ', 'Y', ' ', 'Y', 'Y', 'Y', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Y', 'X'],
+        ['X', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X'],
+        ['X', 'Y', 'Y', 'Y', 'Y', 'X', ' ', ' ', ' ', 'Y', ' ', ' ', 'Y', ' ', 'X', 'Y', 'Y', ' ', 'Y', 'X'],
+        ['X', ' ', ' ', ' ', ' ', 'X', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X'],
+        ['X', 'Y', 'X', 'Y', ' ', 'X', ' ', ' ', 'X', 'Y', ' ', ' ', 'Y', 'Y', 'X', 'Y', 'Y', ' ', 'Y', 'X'],
+        ['X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X'],
+        ['X', 'Y', 'X', 'Y', ' ', 'X', ' ', ' ', ' ', 'Y', ' ', ' ', 'Y', ' ', 'X', 'Y', 'Y', ' ', 'Y', 'X'],
+        ['X', ' ', ' ', ' ', ' ', 'Y', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', 'X', ' ', ' ', ' ', ' ', 'X'],
+        ['X', 'Y', 'X', 'Y', ' ', 'Y', 'X', 'Y', 'X', 'X', ' ', ' ', ' ', ' ', 'X', 'X', 'Y', 'X', 'X', 'X'],
+        ['X', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Y', ' ', ' ', ' ', 'Y', ' ', ' ', ' ', ' ', ' ', 'X'],
+        ['X', ' ', 'P', ' ', ' ', ' ', ' ', 'Y', 'Y', 'Y', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'Y', 'X'],
         ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X']
     ]
     posicionEnemigo1 = [8,17]
@@ -104,6 +116,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     skin = skin_code
     finish = False
     name = nombre
+    nivel = level
     #Funciones de jugador
     
 
@@ -148,9 +161,12 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             ventana.update()
     
     def incrementa_puntos(puntos):
+        global nivel
         score= tk.Label(ventana,text="Puntuación"+str(puntos), relief="raised", bd=4, font=("Fixedsys", 20, "normal"))
         score.place(relx=0.5, rely=0)
-    
+        #Agregado para que muestre el nivel actual
+        nivel= tk.Label(ventana,text="Nivel "+str(nivel), relief="raised", bd=4, font=("Fixedsys", 20, "normal"))
+        nivel.place(relx=0.8, rely=0)
     def cargarImagen(name, row, column):
         imagen = Image.open(f"Bomberman Images//{name}.png")  
         imagen = imagen.resize((44, 44))
@@ -167,7 +183,9 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
 
     #GameOver
     def YouWin(root):
-        global puntuacion,vidas,bombas,tiempo, finish
+        global puntuacion,vidas,bombas,tiempo, finish,sound
+        sound.stop()
+        play_sound("Level Complete")
         puntuacion+=tiempo+100*vidas+25*bombas
         ventana.destroy()
         def Continuar():
@@ -177,7 +195,16 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             elif level == 2:
                 Nivel(root=root, skin_code=skin,lifes=1,bombs=5,duración=90, nombre=nombre, level=3)
             else:
-                pass
+
+                play_sound("Ending Theme")
+                Finish = tk.Toplevel(root)
+                Finish.resizable(False, False)
+                Finish.title("End Game")
+                Finish.config(bg="black")
+                Title= tk.Label(Finish,text=f"You're Awesome {nombre} you end the game with success!!!", relief="raised", bd=4,borderwidth=0, highlightthickness=0,font=("Fixedsys", 32, "normal"),fg="green", bg="black")
+                Title.grid(row=0, column=0)
+                root.deiconify()
+                Finish.mainloop()
         gameOver = tk.Toplevel(root)
         gameOver.resizable(False, False)
         gameOver.title("Game Over")
@@ -190,10 +217,12 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
 
         Continuar = tk.Button(gameOver, text="Continue", bg="#110F34", fg="white", relief="raised", bd=4, font=("Fixedsys", 20, "normal"), command=Continuar)
         Continuar.grid(row=2, column=0)
-    
+        gameOver.mainloop()
     def GameOver(root):
         global finish
         finish = True
+        sound.stop()
+        play_sound("Just Died")
         ventana.destroy()
         def Retry():
             gameOver.destroy()
@@ -213,27 +242,31 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         Title2.grid(row=1, column=0)
         Reiniciar = tk.Button(gameOver, text="Retry", bg="#110F34", fg="white", relief="raised", bd=4, font=("Fixedsys", 20, "normal"), command=Retry)
         Reiniciar.grid(row=2, column=0)
-
+        gameOver.mainloop()
        
    ##################################################
    #Colisiones
     def colisiones_personaje(row, column, row2, column2):
         global vidas
         if row == row2 and column == column2:
+                play_sound("Enemy Dies")
                 vidas -= 1
                 funcionvidas(vidas)
                 mostrar_laberinto(0,0)
     def colisiones_bomba():
         global lista_explosiones, personaje_posicion, vidas, posicionEnemigo1, posicionEnemigo2,enemy1, enemy2,puntuacion
         if personaje_posicion in lista_explosiones:
+            play_sound("Enemy Dies")
             vidas -= 1
             funcionvidas(vidas)
            # mostrar_laberinto(0,0)
         if posicionEnemigo1 in lista_explosiones:
+            play_sound("Enemy Dies")
             enemy1 = False
             puntuacion += 10
             enemigo1.destroy()
         if posicionEnemigo2 in lista_explosiones:
+            play_sound("Enemy Dies")
             enemy2 = False
             puntuacion += 25
             enemigo2.destroy()
@@ -299,6 +332,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             nueva_columna += 1
         Movimiento(tecla)
         if es_accesible_personaje(nueva_fila, nueva_columna):
+            play_sound("Walking 1")
             #Crear nueva posición, cambiando el valor de la variable global posición
             personaje_posicion = [nueva_fila, nueva_columna]
             #Actualizando la los valores de la posición del personaje
@@ -367,7 +401,9 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
 
     def esparcimiento_fuego(row, column):
         global lista_explosiones
+        
         time.sleep(2)
+        play_sound("Bomb Explodes")
         cargarImagen("Fuego0", row, column)
         lista_explosiones+=[[row, column]]
         accesible_bomba(row+1,column)
@@ -531,7 +567,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             return False
         elif fila == posicion_puerta[0] and columna == posicion_puerta[1] and llave_encontrada:
             YouWin(root)
-        return laberinto[fila][columna] in [" ", "E", "Z"]  # Retorna True solo si el valor accedido en la matriz sea == " "
+        return laberinto[fila][columna] in [" ", "E"]  # Retorna True solo si el valor accedido en la matriz sea == " "
     #Código basado en ChatGPT
     """def es_accesible_bomba(fila, columna):
         global posicion_llave
@@ -552,11 +588,15 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     AnimacionEnemigos() 
      # Definir la duración de la cuenta regresiva en segundos
     #ventana.update()
-    # Llamar a la función countdown con la duración especificada
+    # Llamar a la función countdown con la duración especificada    
+    pygame.mixer.init()
+    # Load the sound file
+    sound = pygame.mixer.Sound(".//Sounds//Stage Theme.wav")
+    # Play the sound
+    sound.play()
     cuenta_regresiva = threading.Thread(target=countdown, args=(tiempo,))
     cuenta_regresiva.start()
     
     ventana.bind("<KeyPress>", mover_personaje)
     ventana.mainloop()
-
 

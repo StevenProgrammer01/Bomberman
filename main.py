@@ -2,12 +2,26 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from juego import Nivel,Personalizacion
+import winsound
+import threading
+def play_song():
+    winsound.PlaySound(".//Sounds//mainSong.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
 
+def stop_song():
+    winsound.PlaySound(None, winsound.SND_PURGE)
+def ReproducirSonido(name):
+    winsound.PlaySound(name,winsound.SND_FILENAME)
 def P_personalizacion():
     # Función para abrir la ventana de personalización
-    personalizacion_window = tk.Toplevel(root)
-    personalizacion_window.title("Pantalla de Personalización")
-    personalizacion_window.geometry("300x200")
+    configuracion_window = tk.Toplevel(root)
+    configuracion_window.title("Pantalla de Configuración")
+    configuracion_window.geometry("300x200")
+    #Botón para reproducir canción
+    play_button = tk.Button(configuracion_window, text="Play Song", command=play_song)
+    play_button.grid(row=0, column=0)
+    #Botón para pausar canción
+    stop_button = tk.Button(configuracion_window, text="Stop Song", command=stop_song)
+    stop_button.grid(row=0, column=1)
     # Aquí puedes agregar los widgets y funcionalidades de la ventana de personalización
 
 def P_informacion():
@@ -25,6 +39,7 @@ def P_mejores_puntajes():
     # Aquí puedes agregar los widgets y funcionalidades de la ventana de mejores puntajes
 
 def P_juego():
+
     Personalizacion(root)
     #Nivel(root,1, 4, 10, 180)
 
@@ -43,6 +58,8 @@ background_label.place(x=0, y=0, relwidth=1, relheight=1)
 menu_bar = tk.Menu(root)
 root.config(menu=menu_bar)
 
+sound = threading.Thread(target=play_song)
+sound.start()
 # Menú desplegable "Opciones"
 
 
