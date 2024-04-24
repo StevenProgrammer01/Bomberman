@@ -337,56 +337,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             personaje_posicion = [nueva_fila, nueva_columna]
             #Actualizando la los valores de la posición del personaje
             personaje.grid(row=nueva_fila, column=nueva_columna)
-#Funciones de explosión y esparcimiento de la bomba
-    """def Bomba(row, column):
-        global bomba
-        time.sleep(3)
-        rigth = threading.Thread(target=esparcimiento_fuego, args=(row, column, 0, "right"))
-        rigth.start()
-        left = threading.Thread(target=esparcimiento_fuego, args=(row, column, 0, "left"))
-        left.start()
-        up = threading.Thread(target=esparcimiento_fuego, args=(row, column, 0, "up"))
-        up.start()
-        down = threading.Thread(target=esparcimiento_fuego, args=(row, column, 0, "down"))
-        down.start()
-        time.sleep(3)
-        mostrar_laberinto(0,0)""" 
-
-        #desplegar_personaje() 
-    
-    """def esparcimiento_fuego(x, y, iterator, direction):
-        global lista_explosiones
-        if iterator < 3 and es_accesible_bomba(x, y):
-            fireImage= Image.open(fr"Bomberman Images\Fuego{iterator}.png")
-            fireImage = fireImage.resize((40, 40))
-            fireImage = ImageTk.PhotoImage(fireImage)
-            fire = tk.Label(ventana, image=fireImage, fg = "Green", bg="Green")
-            fire.image = fireImage
-            fire.grid(row=x, column=y)
-            lista_explosiones +=[[x,y]]
-            laberinto[x][y] = " "
-            print(lista_explosiones)
-            if direction == "right":
-                #time.sleep(0.05)
-                ventana.update()
-                esparcimiento_fuego(x,y+1, iterator+1, "right")
-            elif direction == "left":
-                #time.sleep(0.05)
-                #fire.destroy()
-                
-                ventana.update()
-                esparcimiento_fuego(x,y-1, iterator+1, "left")
-            elif direction == "up":
-                #time.sleep(0.05)
-                #fire.destroy()
-                
-                ventana.update()
-                esparcimiento_fuego(x-1,y, iterator+1, "up")
-            elif direction == "down":
-                #time.sleep(0.05)
-                #fire.destroy()
-                ventana.update()
-                esparcimiento_fuego(x+1,y, iterator+1, "down")"""
+#Funciones de explosión y esparcimiento de la bomba    
     def colocarBomba():
         global personaje_posicion
         global bomba_posicion

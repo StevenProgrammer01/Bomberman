@@ -31,11 +31,43 @@ def P_informacion():
     configuracion_window.geometry("300x200")
     # Aquí puedes agregar los widgets y funcionalidades de la ventana de configuración
 
+
+
 def P_mejores_puntajes():
     # Función para abrir la ventana de mejores puntajes
+    def MejoresPuntajesAux(level, root):
+        mejores_puntajes_window_aux = tk.Toplevel(root)
+        mejores_puntajes_window_aux.title(f"Mejores Puntajes nivel {level}")
+        def LeerArchivo(level):
+            ruta=f"{level}.txt"
+            archivo=open(ruta) # coloca el contenido en memoria
+            contenido=archivo.readlines()
+            archivo.close()
+            return contenido 
+    
+        content = LeerArchivo(level)
+        def mostrar(contenido, row):
+            if contenido == []:
+                return
+            else:
+                registro = contenido[0].split("@")
+                print(contenido[0])
+                registry= tk.Label(mejores_puntajes_window_aux,text=f"Nombre: {registro[0]} Puntaje: {registro[1]}", relief="raised", bd=4, font=("Fixedsys", 20, "normal"))
+                registry.grid(row=row, column=0)
+                mostrar(contenido[1:], row+1)
+
+        mostrar(content,0)
     mejores_puntajes_window = tk.Toplevel(root)
     mejores_puntajes_window.title("Mejores Puntajes")
-    mejores_puntajes_window.geometry("300x200")
+    PuntajesNivel1 = tk.Button(mejores_puntajes_window, text="Nivel 1", bg="#110F34", fg="white", relief="raised", bd=4, font=("Fixedsys", 20, "normal"), command=lambda:MejoresPuntajesAux(1,mejores_puntajes_window))
+    PuntajesNivel1.grid(row=0, column=0)
+    PuntajesNivel2 = tk.Button(mejores_puntajes_window, text="Nivel 2", bg="#110F34", fg="white", relief="raised", bd=4, font=("Fixedsys", 20, "normal"), command=lambda:MejoresPuntajesAux(2,mejores_puntajes_window))
+    PuntajesNivel2.grid(row=1, column=0)
+    PuntajesNivel3 = tk.Button(mejores_puntajes_window, text="Nivel 3", bg="#110F34", fg="white", relief="raised", bd=4, font=("Fixedsys", 20, "normal"), command=lambda:MejoresPuntajesAux(3,mejores_puntajes_window))
+    PuntajesNivel3.grid(row=2, column=0)
+    
+
+
     # Aquí puedes agregar los widgets y funcionalidades de la ventana de mejores puntajes
 
 def P_juego():
