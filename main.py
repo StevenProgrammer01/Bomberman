@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from tkinter import messagebox
-from juego import Nivel,Personalizacion
+from juego import Personalizacion
 import winsound
 import threading
 def play_song():
@@ -130,7 +129,7 @@ def P_juego():
 root = tk.Tk()
 root.title("Ventana Principal")
 root.geometry("800x600")
-
+root.resizable(False, False)
 #Usamos pillow para la imágen de fondo para poder manipularla mejor y no generar errores
 background_image = Image.open(".//fondo.jpeg")
 background_image = background_image.resize((800, 600))

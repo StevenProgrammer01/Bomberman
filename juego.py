@@ -9,16 +9,19 @@ import time
 import winsound
 import pygame
 
-
+#Funcion para reproducir sonidos durante el juego
 def play_sound(name):
     winsound.PlaySound(f".//Sounds//{name}.wav", winsound.SND_FILENAME | winsound.SND_ASYNC)
+
+#Función que se despliega antes de iniciar con el primer nivel del juego
+#Su funcionalidad se basa en la personalización del personaje y el nombre
 def Personalizacion(root):
     def boton_presionado(numero, nombre):
         root.iconify()
         winsound.PlaySound(None, winsound.SND_PURGE)
         winsound.PlaySound(".//Sounds//item Get.wav",winsound.SND_FILENAME)
         root2.destroy()
-        Nivel(root,numero,3,10,180,nombre, 1)
+        Nivel(root,numero,3,15,180,nombre, 1)
         
 
     # Crear la ventana
@@ -61,7 +64,7 @@ def Personalizacion(root):
 
 
 
-
+# Función que contiene toda la lógica aplicada al videojuego, está parametrizada para incrementar el nivel de dificultad en diferentes niveles
 def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     play_sound("Level Start")
     
@@ -73,6 +76,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     ventana.attributes('-topmost', True)
     print(nombre)
     
+    #Generar referencias a las variables globales que se utilizarán a lo largo del código para acceder más fácilmente a ellas y ejecutar cambios entre funciones
     global vidas, llave_encontrada,bombas,puntuacion, enemy1, enemy2, tiempo, laberinto
     global fire, enemigo1, enemigo2,personaje
     global enemigoImagen1, enemigoImagen2,personaje_imagen,imagen_actual
@@ -80,6 +84,11 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     global lista_explosiones, nivel
     global skin, finish, name, sound
     #Inicializar variables globales del juego
+    # X: Indestructible
+    # Y: Destructible
+    # C: Corazón que representa las vidas del personaje
+    # B: Bomba que representa la cantidad de bombas del personaje
+    # P: Puerta para pasar al siguiente nivel
     laberinto = [
         ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
         ['X', 'C', 'X', 'B', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
@@ -102,6 +111,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     posicionEnemigo2 = [14,12]
     posicion_puerta = []
     llave_encontrada = False
+    #Imagen con la que iniciará el personaje al inicio del juego
     imagen_actual = "1"
     bomba_posicion=[]
     personaje_posicion = [2,1]
@@ -121,7 +131,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     
 
     ################################################
-
+    #Función para Escribir nuevos datos en los documentos, cada nivel tiene su propio documento
     def EscribirArchivo(name, puntuacion, level):
         ruta=f"{level}.txt"
         archivo=open(ruta,"a")#a->append OJO
@@ -129,6 +139,8 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         archivo.close()
 
     #Código basado en ChatGPT    
+    """Función parar cuenta regresiva, utiliza el único while permitido por el proyecto, al terminar significa que el jugador,
+    No completó el juego en el tiempo establecido"""
     def countdown(duration):
         global finish, tiempo
         remaining_time = datetime.timedelta(seconds=duration)
@@ -143,7 +155,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         if not finish:
             GameOver(root)
         
-
+    #Función para actualizar el grado de vidas, si es 0 se termina el juego
     def funcionvidas(vidas):
         if vidas <= 0:
             GameOver(root)
@@ -151,7 +163,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             Vida= tk.Label(ventana,text=str(vidas)+"X", relief="raised", bd=4, font=("Fixedsys", 17, "normal"))
             Vida.grid(row=1, column=0)
             ventana.update()
-    
+    #Función para actualizar el grado de bombas, si es 0 se termina el juego
     def funcionbombas(bombas):
         if bombas <= 0:
             GameOver(root)
@@ -160,13 +172,15 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             Bomba.grid(row=1, column=2)
             ventana.update()
     
+    #Función para incrementar los puntos y mostrarlos en pantalla
     def incrementa_puntos(puntos):
         global nivel
         score= tk.Label(ventana,text="Puntuación"+str(puntos), relief="raised", bd=4, font=("Fixedsys", 20, "normal"))
         score.place(relx=0.5, rely=0)
         #Agregado para que muestre el nivel actual
-        nivel= tk.Label(ventana,text="Nivel "+str(nivel), relief="raised", bd=4, font=("Fixedsys", 20, "normal"))
-        nivel.place(relx=0.8, rely=0)
+        nivel_label= tk.Label(ventana,text="Nivel "+str(nivel), relief="raised", bd=4, font=("Fixedsys", 20, "normal"))
+        nivel_label.place(relx=0.8, rely=0)
+    #Función para cargar imágen utilizada mayormente para reutilizar código en algunos casos específicos
     def cargarImagen(name, row, column):
         imagen = Image.open(f"Bomberman Images//{name}.png")  
         imagen = imagen.resize((44, 44))
@@ -175,13 +189,14 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         label.image = imagen
         label.grid(row=row, column=column)
 
+    #Función que verifica si se encontró la llave o no
     def find_key(row, column):
         global llave_encontrada, posicion_llave
         if row == posicion_llave[0] and column == posicion_llave[1]:
             laberinto[row][column] = "E"
             llave_encontrada = True
 
-    #GameOver
+    #Función para llamar a ventana una vez que se determina que el usuario pasó el nivel
     def YouWin(root):
         global puntuacion,vidas,bombas,tiempo, finish,sound
         sound.stop()
@@ -218,6 +233,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         Continuar = tk.Button(gameOver, text="Continue", bg="#110F34", fg="white", relief="raised", bd=4, font=("Fixedsys", 20, "normal"), command=Continuar)
         Continuar.grid(row=2, column=0)
         gameOver.mainloop()
+    #Función para llamar a ventana una vez que se determina que el usuario no pasó el nivel
     def GameOver(root):
         global finish
         finish = True
@@ -282,6 +298,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
         personaje = tk.Label(ventana, image=personaje_imagen, fg = "#408404", bg="#408404")
         personaje.grid(row=personaje_posicion[0], column=personaje_posicion[1])
 
+    #Función para cambiar la imagen del personaje dependiendo de su movimiento
     def cambiarImagenPersonaje(categoría, imagen):
         global personaje_imagen, skin
         personaje_imagen = Image.open(f"Bomberman Images//{skin}-{categoría}-{imagen}.png")
@@ -300,7 +317,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             imagen_actual = "1"
         cambiarImagenPersonaje(cat_move,imagen_actual)
         
-
+    #Identifica el movimiento y pasa su categoría de imagen correspondiente al movimiento
     def Movimiento(move):
         if move == "Up":
             return animacion_moveAux("2")
@@ -332,7 +349,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
             nueva_columna += 1
         Movimiento(tecla)
         if es_accesible_personaje(nueva_fila, nueva_columna):
-            play_sound("Walking 1")
+            
             #Crear nueva posición, cambiando el valor de la variable global posición
             personaje_posicion = [nueva_fila, nueva_columna]
             #Actualizando la los valores de la posición del personaje
@@ -471,6 +488,7 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     def mostrar_laberinto(x=0, y=0):
         global posiciones_destructibles, vidas, laberinto_cargado, puntuacion,bombas
         global posicion_puerta
+        # Si se determina que se ha recorrido todas las filas y todas las columnas, se depliegan el resto de imágenes 
         if x == len(laberinto)-1 and y == len(laberinto[0])-1:
             print(laberinto)
             desplegar_personaje()
@@ -514,22 +532,11 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
     def es_accesible_personaje(fila, columna):
         global posicion_puerta, bomba_posicion
         global llave_encontrada
-        if fila < 0 or columna < 0 or fila >= len(laberinto) or columna >= len(laberinto[0]) or [fila, columna]==bomba_posicion:
+        if fila < 0 or columna < 0 or fila >= len(laberinto) or columna >= len(laberinto[0]):
             return False
         elif fila == posicion_puerta[0] and columna == posicion_puerta[1] and llave_encontrada:
             YouWin(root)
         return laberinto[fila][columna] in [" ", "E"]  # Retorna True solo si el valor accedido en la matriz sea == " "
-    #Código basado en ChatGPT
-    """def es_accesible_bomba(fila, columna):
-        global posicion_llave
-        global llave_encontrada
-        if fila < 0 or columna < 0 or fila >= len(laberinto) or columna >= len(laberinto[0]):
-            return False
-        elif fila == posicion_llave[0] and columna == posicion_llave[1]:
-            laberinto[fila][columna] = "E"
-            llave_encontrada = True
-        return laberinto[fila][columna] in [" ", "Z", "Y", "E"]"""# Retorna True solo si el valor accedido en la matriz sea == " "
-    #Crear posición random de la llave
     mostrar_laberinto(0,0)
     posicion_llave = posicion_random_con_espacios()
     laberinto[posicion_llave[0]][posicion_llave[1]] = "Z"
@@ -537,13 +544,11 @@ def Nivel(root, skin_code,lifes, bombs, duración, nombre, level):
    
         
     AnimacionEnemigos() 
-     # Definir la duración de la cuenta regresiva en segundos
-    #ventana.update()
-    # Llamar a la función countdown con la duración especificada    
+    
     pygame.mixer.init()
-    # Load the sound file
+
+    #Se debe utilizar la biblioteca de Pygame para el audio de fondo del videojuego para que no interfiera con los efectos de sonido
     sound = pygame.mixer.Sound(".//Sounds//Stage Theme.wav")
-    # Play the sound
     sound.play()
     cuenta_regresiva = threading.Thread(target=countdown, args=(tiempo,))
     cuenta_regresiva.start()
